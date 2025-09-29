@@ -1,0 +1,18 @@
+{
+    "Paracetamol": {
+        "stock": 0,
+        "serials": {}
+    },
+    "Amoxicillin": {
+        "stock": 0,
+        "serials": {}
+    },
+    "Ibuprofen": {
+        "stock": 0,
+        "serials": {}
+    },
+    "Cetirizine": {
+        "stock": 0,
+        "serials": {}
+    }
+}
