@@ -1,0 +1,78 @@
+{
+    "Alice": {
+        "purchases": [
+            {
+                "medicine": "Paracetamol",
+                "serial": "1",
+                "price": 10,
+                "date": "2025-09-29 18:24:18"
+            },
+            {
+                "medicine": "Ibuprofen",
+                "serial": "1",
+                "price": 18,
+                "date": "2025-09-29 18:24:18"
+            },
+            {
+                "medicine": "Paracetamol",
+                "serial": "3",
+                "price": 15,
+                "date": "2025-09-29 18:24:18"
+            },
+            {
+                "medicine": "Amoxicillin",
+                "serial": "1",
+                "price": 25,
+                "date": "2025-09-29 18:24:18"
+            }
+        ],
+        "frequency": {
+            "Paracetamol": 2,
+            "Ibuprofen": 1,
+            "Amoxicillin": 1
+        },
+        "total_price": 68
+    },
+    "Bob": {
+        "purchases": [
+            {
+                "medicine": "Amoxicillin",
+                "serial": "2",
+                "price": 20,
+                "date": "2025-09-29 18:24:18"
+            },
+            {
+                "medicine": "Paracetamol",
+                "serial": "2",
+                "price": 12,
+                "date": "2025-09-29 18:24:18"
+            }
+        ],
+        "frequency": {
+            "Amoxicillin": 1,
+            "Paracetamol": 1
+        },
+        "total_price": 32
+    },
+    "Charlie": {
+        "purchases": [
+            {
+                "medicine": "Cetirizine",
+                "serial": "1",
+                "price": 8,
+                "date": "2025-09-29 18:24:18"
+            },
+            {
+                "medicine": "Ibuprofen",
+                "serial": "2",
+                "price": 22,
+                "date": "2025-09-29 18:24:18"
+            }
+        ],
+        "frequency": {
+            "Cetirizine": 1,
+            "Ibuprofen": 1
+        },
+        "total_price": 30
+    }
+}
