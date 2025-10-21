@@ -8,30 +8,32 @@ const HospitalNavigation = () => {
   const [path, setPath] = useState(null);
 
   const locations = [
-    { id: 'entrance', name: 'Main Entrance', icon: '🚪' },
-    { id: 'emergency', name: 'Emergency Room', icon: '🚑' },
-    { id: 'pharmacy', name: 'Pharmacy', icon: '💊' },
-    { id: 'radiology', name: 'Radiology', icon: '🩻' },
-    { id: 'surgery', name: 'Surgery Department', icon: '🏥' },
-    { id: 'cardiology', name: 'Cardiology', icon: '❤️' },
-    { id: 'pediatrics', name: 'Pediatrics', icon: '👶' },
-    { id: 'laboratory', name: 'Laboratory', icon: '🧪' },
-    { id: 'cafeteria', name: 'Cafeteria', icon: '🍽️' },
-    { id: 'reception', name: 'Reception', icon: '📋' },
+    { id: 'PKG', name: 'Parking Garage', icon: '🅿️' },
+    { id: 'ME', name: 'Main Entrance & Reception', icon: '🚪' },
+    { id: 'ER', name: 'Emergency Room', icon: '🚑' },
+    { id: 'OPC', name: 'Outpatient Clinic', icon: '🏥' },
+    { id: 'RAD', name: 'Radiology & Imaging Center', icon: '🩻' },
+    { id: 'LAB', name: 'Laboratory', icon: '🧪' },
+    { id: 'SUR', name: 'Surgical Center', icon: '⚕️' },
+    { id: 'IWA', name: 'Inpatient Ward A', icon: '🛏️' },
+    { id: 'IWB', name: 'Inpatient Ward B', icon: '🏨' },
+    { id: 'PHR', name: 'Pharmacy', icon: '💊' },
+    { id: 'CAF', name: 'Cafeteria', icon: '🍽️' },
   ];
 
-  // Simulated graph with distances (in meters)
+  // Graph matching the backend Hospital_Graph_DSA.py
   const graph = {
-    entrance: { reception: 20, emergency: 50 },
-    reception: { entrance: 20, pharmacy: 30, laboratory: 40 },
-    pharmacy: { reception: 30, emergency: 25, cafeteria: 35 },
-    emergency: { entrance: 50, pharmacy: 25, surgery: 40 },
-    surgery: { emergency: 40, radiology: 30, cardiology: 20 },
-    radiology: { surgery: 30, laboratory: 25 },
-    cardiology: { surgery: 20, pediatrics: 35 },
-    pediatrics: { cardiology: 35, laboratory: 30, cafeteria: 20 },
-    laboratory: { reception: 40, radiology: 25, pediatrics: 30 },
-    cafeteria: { pharmacy: 35, pediatrics: 20 },
+    PKG: { ME: 100 },
+    ME: { PKG: 100, OPC: 120, CAF: 50, IWA: 150 },
+    ER: { RAD: 60, SUR: 90 },
+    OPC: { ME: 120, LAB: 70, PHR: 80 },
+    RAD: { ER: 60, LAB: 40, IWA: 110, IWB: 130 },
+    LAB: { OPC: 70, RAD: 40, PHR: 50 },
+    SUR: { ER: 90, IWA: 100, IWB: 70 },
+    IWA: { ME: 150, RAD: 110, SUR: 100, IWB: 80, CAF: 140 },
+    IWB: { RAD: 130, SUR: 70, IWA: 80 },
+    PHR: { OPC: 80, LAB: 50 },
+    CAF: { ME: 50, IWA: 140 },
   };
 
   // Dijkstra's Algorithm Implementation
@@ -219,7 +221,10 @@ const HospitalNavigation = () => {
                       <div className="flex-1 bg-blue-50 p-3 rounded-lg">
                         <div className="flex items-center">
                           <span className="text-2xl mr-2">{getLocationIcon(nodeId)}</span>
-                          <span className="font-semibold text-textPrimary">{getLocationName(nodeId)}</span>
+                          <div>
+                            <span className="font-semibold text-textPrimary">{getLocationName(nodeId)}</span>
+                            <span className="text-xs text-textSecondary ml-2">({nodeId})</span>
+                          </div>
                         </div>
                       </div>
                       {index < path.path.length - 1 && (
@@ -237,7 +242,7 @@ const HospitalNavigation = () => {
                 animate={{ opacity: 1, y: 0 }}
                 className="bg-red-50 rounded-xl shadow-lg p-6 border-l-4 border-error"
               >
-                <p className="text-error font-semibold">No path found between these locations.</p>
+                <p className="text-error font-semibold">⚠️ No path found between these locations.</p>
               </motion.div>
             )}
           </div>
@@ -251,35 +256,135 @@ const HospitalNavigation = () => {
           >
             <h2 className="text-xl font-bold text-textPrimary mb-4">Hospital Layout</h2>
             
-            {/* Simplified Map Grid */}
-            <div className="bg-gradient-to-br from-blue-100 to-indigo-100 rounded-lg p-8">
-              <div className="grid grid-cols-3 gap-4">
-                {locations.map((location, index) => (
-                  <motion.div
-                    key={location.id}
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: 0.4 + index * 0.05 }}
-                    className={`p-4 rounded-lg text-center transition-all ${
-                      path?.path.includes(location.id)
-                        ? 'bg-primary text-white shadow-lg scale-105'
-                        : location.id === startNode
-                        ? 'bg-success text-white'
-                        : location.id === endNode
-                        ? 'bg-error text-white'
-                        : 'bg-white hover:shadow-md'
-                    }`}
-                  >
-                    <div className="text-3xl mb-2">{location.icon}</div>
-                    <div className={`text-xs font-semibold ${
-                      path?.path.includes(location.id) || location.id === startNode || location.id === endNode
-                        ? 'text-white'
-                        : 'text-textPrimary'
-                    }`}>
-                      {location.name}
-                    </div>
-                  </motion.div>
-                ))}
+            {/* Hospital Map Grid - Organized by logical areas */}
+            <div className="bg-gradient-to-br from-blue-100 to-indigo-100 rounded-lg p-6">
+              {/* Entrance Area */}
+              <div className="mb-4">
+                <p className="text-xs font-semibold text-textSecondary mb-2">ENTRANCE AREA</p>
+                <div className="grid grid-cols-2 gap-3">
+                  {['PKG', 'ME'].map((locId) => {
+                    const location = locations.find(l => l.id === locId);
+                    return (
+                      <motion.div
+                        key={location.id}
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ delay: 0.4 }}
+                        className={`p-3 rounded-lg text-center transition-all cursor-pointer ${
+                          path?.path.includes(location.id)
+                            ? 'bg-primary text-white shadow-lg scale-105'
+                            : location.id === startNode
+                            ? 'bg-success text-white'
+                            : location.id === endNode
+                            ? 'bg-error text-white'
+                            : 'bg-white hover:shadow-md'
+                        }`}
+                      >
+                        <div className="text-2xl mb-1">{location.icon}</div>
+                        <div className={`text-xs font-semibold ${
+                          path?.path.includes(location.id) || location.id === startNode || location.id === endNode
+                            ? 'text-white'
+                            : 'text-textPrimary'
+                        }`}>
+                          {location.name}
+                        </div>
+                        <div className={`text-xs mt-1 ${
+                          path?.path.includes(location.id) || location.id === startNode || location.id === endNode
+                            ? 'text-white/80'
+                            : 'text-textSecondary'
+                        }`}>
+                          ({location.id})
+                        </div>
+                      </motion.div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Clinical Area */}
+              <div className="mb-4">
+                <p className="text-xs font-semibold text-textSecondary mb-2">CLINICAL SERVICES</p>
+                <div className="grid grid-cols-3 gap-3">
+                  {['OPC', 'ER', 'RAD', 'LAB', 'PHR'].map((locId) => {
+                    const location = locations.find(l => l.id === locId);
+                    return (
+                      <motion.div
+                        key={location.id}
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ delay: 0.5 }}
+                        className={`p-3 rounded-lg text-center transition-all cursor-pointer ${
+                          path?.path.includes(location.id)
+                            ? 'bg-primary text-white shadow-lg scale-105'
+                            : location.id === startNode
+                            ? 'bg-success text-white'
+                            : location.id === endNode
+                            ? 'bg-error text-white'
+                            : 'bg-white hover:shadow-md'
+                        }`}
+                      >
+                        <div className="text-2xl mb-1">{location.icon}</div>
+                        <div className={`text-xs font-semibold ${
+                          path?.path.includes(location.id) || location.id === startNode || location.id === endNode
+                            ? 'text-white'
+                            : 'text-textPrimary'
+                        }`}>
+                          {location.name}
+                        </div>
+                        <div className={`text-xs mt-1 ${
+                          path?.path.includes(location.id) || location.id === startNode || location.id === endNode
+                            ? 'text-white/80'
+                            : 'text-textSecondary'
+                        }`}>
+                          ({location.id})
+                        </div>
+                      </motion.div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Inpatient & Support */}
+              <div>
+                <p className="text-xs font-semibold text-textSecondary mb-2">INPATIENT & SUPPORT</p>
+                <div className="grid grid-cols-4 gap-3">
+                  {['SUR', 'IWA', 'IWB', 'CAF'].map((locId) => {
+                    const location = locations.find(l => l.id === locId);
+                    return (
+                      <motion.div
+                        key={location.id}
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ delay: 0.6 }}
+                        className={`p-3 rounded-lg text-center transition-all cursor-pointer ${
+                          path?.path.includes(location.id)
+                            ? 'bg-primary text-white shadow-lg scale-105'
+                            : location.id === startNode
+                            ? 'bg-success text-white'
+                            : location.id === endNode
+                            ? 'bg-error text-white'
+                            : 'bg-white hover:shadow-md'
+                        }`}
+                      >
+                        <div className="text-2xl mb-1">{location.icon}</div>
+                        <div className={`text-xs font-semibold ${
+                          path?.path.includes(location.id) || location.id === startNode || location.id === endNode
+                            ? 'text-white'
+                            : 'text-textPrimary'
+                        }`}>
+                          {location.name}
+                        </div>
+                        <div className={`text-xs mt-1 ${
+                          path?.path.includes(location.id) || location.id === startNode || location.id === endNode
+                            ? 'text-white/80'
+                            : 'text-textSecondary'
+                        }`}>
+                          ({location.id})
+                        </div>
+                      </motion.div>
+                    );
+                  })}
+                </div>
               </div>
             </div>
 
