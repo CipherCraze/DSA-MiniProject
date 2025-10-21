@@ -1,6 +1,6 @@
 import { motion, useScroll, useTransform, useSpring, useMotionValue, useAnimationControls } from 'framer-motion';
 import { Pill, Ambulance, Calendar, Map, Sparkles, Shield, Heart, TrendingUp, Users, Clock, Award, CheckCircle } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import ButtonCard from '../components/ButtonCard';
 import AnimatedBackground from '../components/AnimatedBackground';
 
@@ -8,6 +8,7 @@ const WelcomePage = () => {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [isHovering, setIsHovering] = useState(false);
   const controls = useAnimationControls();
+  const featuresRef = useRef(null);
 
   // Parallax effect
   const { scrollY } = useScroll();
@@ -86,6 +87,13 @@ const WelcomePage = () => {
     { icon: CheckCircle, text: '99.9% Uptime Guarantee' },
     { icon: Sparkles, text: 'AI-Powered Insights' },
   ];
+
+  const scrollToFeatures = () => {
+    featuresRef.current?.scrollIntoView({ 
+      behavior: 'smooth', 
+      block: 'start' 
+    });
+  };
 
   return (
     <div className="min-h-screen relative overflow-hidden">
@@ -172,6 +180,7 @@ const WelcomePage = () => {
             <motion.button
               whileHover={{ scale: 1.05, boxShadow: "0 20px 40px rgba(46, 139, 192, 0.3)" }}
               whileTap={{ scale: 0.95 }}
+              onClick={scrollToFeatures}
               className="px-8 py-4 bg-gradient-to-r from-primary to-highlight text-white rounded-xl font-semibold text-lg shadow-lg hover:shadow-2xl transition-all"
             >
               Get Started Free
@@ -210,6 +219,7 @@ const WelcomePage = () => {
 
         {/* Feature Cards with 3D Tilt Effect */}
         <motion.div
+          ref={featuresRef}
           style={{ y: y2 }}
           className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 mb-20"
         >
@@ -218,18 +228,7 @@ const WelcomePage = () => {
               key={feature.path}
               initial={{ opacity: 0, y: 50, rotateX: 45 }}
               animate={{ opacity: 1, y: 0, rotateX: 0 }}
-              transition={{ 
-                delay: 0.8 + index * 0.15,
-                duration: 0.6,
-                type: "spring",
-                stiffness: 100
-              }}
-              whileHover={{ 
-                scale: 1.02,
-                rotateY: 5,
-                rotateX: 5,
-                transition: { duration: 0.3 }
-              }}
+              
               style={{
                 perspective: 1000,
                 transformStyle: "preserve-3d"

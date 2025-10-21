@@ -74,5 +74,33 @@
             "Ibuprofen": 1
         },
         "total_price": 30
+    },
+    "Vipin": {
+        "purchases": [
+            {
+                "medicine": "Albentizole",
+                "serial": "6",
+                "price": 560.0,
+                "date": "2025-10-21 22:35:34"
+            }
+        ],
+        "frequency": {
+            "Albentizole": 1
+        },
+        "total_price": 560.0
+    },
+    "A": {
+        "purchases": [
+            {
+                "medicine": "Deslor",
+                "serial": "12344",
+                "price": 10.0,
+                "date": "2025-10-21 23:44:28"
+            }
+        ],
+        "frequency": {
+            "Deslor": 1
+        },
+        "total_price": 10.0
     }
 }

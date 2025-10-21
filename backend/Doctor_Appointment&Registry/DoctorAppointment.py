@@ -1,9 +1,12 @@
-import json
-with open('Patients.json') as f:
-    patients = json.load(f)
-with open('Doctors.json') as f:
-    doctors = json.load(f)
+import json, os
+BASE_DIR=os.path.dirname(os.path.abspath(__file__))
+PATI_F=os.path.join(BASE_DIR, "Patients.json")
+DOCT_F=os.path.join(BASE_DIR, "Doctors.json")
 
+with open(PATI_F,) as f:
+    patients = json.load(f)
+with open(DOCT_F) as f:
+    doctors = json.load(f)
 
 def add_patient(patient_id, name, age, contact):
     if patient_id not in patients:
@@ -142,11 +145,13 @@ def main():
         elif n==8:
             show_doctor_records()
         elif n==9:
-            with open('Patients.json','w') as f:
+            with open(PATI_F,'w') as f:
                 json.dump(patients,f,indent=3)
-            with open('Doctors.json','w') as f:
+            with open(DOCT_F,'w') as f:
                 json.dump(doctors,f,indent=3)
             print("Exiting....")
             return
         else:
             print("Invalid input. please choose an option from 1 to 9.")
+if __name__=="__main__":
+    main()
