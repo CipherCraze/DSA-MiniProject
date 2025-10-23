@@ -225,40 +225,94 @@ nearest_expiry = heap[0]
 ## 📦 Installation
 
 ### Prerequisites
-- **Node.js** 20.19+ or 22.12+ ([Download](https://nodejs.org/))
-- **Python** 3.8+ ([Download](https://www.python.org/downloads/))
-- **npm** or **yarn** package manager
-- **Git** ([Download](https://git-scm.com/))
 
-### Step 1: Clone Repository
+Before starting, ensure you have these installed on your system:
+
+#### Required Software:
+1. **Node.js** (v20.19+ or 22.12+) - [Download Here](https://nodejs.org/)
+   ```bash
+   # Verify installation
+   node --version
+   npm --version
+   ```
+
+2. **Python** (v3.8 or higher) - [Download Here](https://www.python.org/downloads/)
+   ```bash
+   # Verify installation
+   python --version
+   # or on some systems
+   python3 --version
+   
+   pip --version
+   # or
+   pip3 --version
+   ```
+
+3. **Git** (optional, for cloning) - [Download Here](https://git-scm.com/)
+
+---
+
+### Step-by-Step Installation
+
+#### Step 1: Clone or Download Repository
 ```bash
-git clone https://github.com/CipherCraze/DSA-MiniProject.git
+# Using Git
+git clone https://github.com/theblag/DSA-MiniProject.git
 cd DSA-MiniProject
+
+# OR download ZIP from GitHub and extract it
 ```
 
-### Step 2: Install Frontend Dependencies
+#### Step 2: Install Frontend Dependencies
+Open terminal/command prompt in the project root directory:
+
 ```bash
+# Install all React dependencies
 npm install
-# or
-yarn install
 ```
 
-### Step 3: Install Backend Dependencies
+This will install:
+- React 19.1.1
+- Vite 7.1.7
+- Tailwind CSS 3.4.18
+- Framer Motion 12.23.24
+- React Router DOM 7.9.4
+- Lucide React (Icons)
+- Recharts (Charts)
+- And other dependencies from `package.json`
+
+#### Step 3: Install Backend Dependencies
+Navigate to backend folder and install Python packages:
+
 ```bash
 cd backend
-pip install fastapi uvicorn pydantic
-# or use requirements.txt if available
 pip install -r requirements.txt
 ```
 
-### Step 4: Verify Installation
-Check if all dependencies are installed:
-```bash
-# Frontend
-npm list
+This will install:
+- FastAPI 0.115.6
+- Uvicorn 0.34.0
+- Pydantic 2.10.5
 
-# Backend
-pip list
+**Alternative (if requirements.txt doesn't work):**
+```bash
+pip install fastapi uvicorn pydantic
+```
+
+**For Python 3.x users:**
+```bash
+pip3 install -r requirements.txt
+```
+
+#### Step 4: Verify Installation
+Check if all dependencies are correctly installed:
+
+```bash
+# Frontend (from project root)
+npm list --depth=0
+
+# Backend (from backend folder)
+pip list | grep -E "fastapi|uvicorn|pydantic"
 ```
 
 ---
@@ -269,31 +323,106 @@ pip list
 
 #### Option 1: Manual Start (Recommended for Development)
 
-**Terminal 1 - Backend Server:**
+You need **TWO separate terminal windows**:
+
+**Terminal 1 - Start Backend Server:**
 ```bash
 cd backend
-uvicorn unified_api:app --host 0.0.0.0 --port 8000 --reload
+python -m uvicorn unified_api:app --host 0.0.0.0 --port 8000 --reload
+
+# For Python 3 users:
+python3 -m uvicorn unified_api:app --host 0.0.0.0 --port 8000 --reload
+
+# Alternative (if above doesn't work):
+uvicorn unified_api:app --reload --port 8000
 ```
 
-**Terminal 2 - Frontend Server:**
+**Terminal 2 - Start Frontend Server:**
 ```bash
+# From project root directory
 npm run dev
 ```
 
-#### Option 2: Using PowerShell Script (Windows)
+#### Option 2: Using PowerShell Scripts (Windows Only)
+
+For full unified system:
 ```powershell
 .\start-unified.ps1
 ```
 
+For emergency triage only:
+```powershell
+.\start-emergency-triage.ps1
+```
+
+---
+
 ### Access Points
-- **Frontend**: http://localhost:5173 (or 5174 if port is occupied)
+Once both servers are running, access the application at:
+
+- **Frontend (Main UI)**: http://localhost:5173 (or 5174 if port is occupied)
 - **Backend API**: http://localhost:8000
 - **API Documentation (Swagger)**: http://localhost:8000/docs
 - **API Documentation (ReDoc)**: http://localhost:8000/redoc
 - **Health Check**: http://localhost:8000/api/health
 
+---
+
+### 🔄 Using Backup Terminal-Based System
+
+If the web-based system doesn't work or you prefer a **command-line interface**, use the backup system:
+
+#### What is backup.py?
+`backup.py` is a **terminal-based fallback** that provides direct CLI access to hospital systems without requiring a web browser or frontend server. Perfect for:
+- Testing backend logic independently
+- Debugging without UI complications  
+- Quick demonstrations
+- Systems with limited resources
+
+#### Running the Backup System:
+
+```bash
+cd backend
+python backup.py
+
+# For Python 3:
+python3 backup.py
+```
+
+#### Available Options in Backup:
+```
+Enter the choice: 1
+1. Hospital Navigation System
+2. Emergency Management System (Coming Soon)
+3. Inventory Management System (Coming Soon)
+4. Patient Record System (Coming Soon)
+```
+
+#### Example - Using Hospital Navigation:
+```bash
+$ python backup.py
+Enter the choice: 1
+
+Welcome to the Hospital Navigation System
+Available Locations: PKG, ME, ER, OPC, RAD, LAB, SUR, IWA, IWB, PHR, CAF
+
+Enter your starting location (or 'exit' to quit): PKG
+Enter your destination location: ER
+
+📍 Shortest distance: 210 meters.
+🚶 Path: PKG -> ME -> IWA -> SUR -> ER
+
+Enter your starting location (or 'exit' to quit): exit
+Thank you for using the Hospital Navigation System. Stay safe!
+```
+
+**Note**: The backup system currently has limited functionality compared to the full web application. Only Hospital Navigation is fully implemented in `backup.py`.
+
+---
+
 ### Stopping the Application
-Press `Ctrl+C` in both terminal windows to stop the servers.
+- Press `Ctrl+C` in both terminal windows to stop the servers
+- For PowerShell scripts: Press `Ctrl+C` or close the window
 
 ---
 
@@ -389,45 +518,103 @@ curl -X POST http://localhost:8000/api/pharmacy/medicines \
 
 ```
 DSA-MiniProject/
-├── backend/
-│   ├── unified_api.py                    # Main unified FastAPI server
-│   ├── Emergency_Management.py           # Emergency triage logic
-│   ├── Hospital_Graph_DSA.py            # Navigation graph implementation
-│   ├── Doctor_Appointment&Registry/
-│   │   ├── DoctorAppointment.py         # Appointment logic
-│   │   ├── Doctors.json                 # Doctor data storage
-│   │   └── Patients.json                # Patient data storage
-│   └── Inventory_Management/
-│       ├── main.py                      # Pharmacy CLI (original)
-│       ├── inventory_management.py      # Inventory operations
-│       ├── billing.py                   # FIFO billing logic
-│       ├── frequency_max.py             # Max heap analytics
-│       ├── expiry_min.py               # Expiry min heap
-│       ├── stock_min.py                # Stock min heap
-│       ├── medicine.json               # Medicine inventory
-│       └── patient.json                # Billing history
-├── src/
-│   ├── pages/
-│   │   ├── WelcomePage.jsx             # Landing page
-│   │   ├── EmergencyTriage.jsx         # Emergency module UI
-│   │   ├── HospitalNavigation.jsx      # Navigation module UI
-│   │   ├── AppointmentScheduling.jsx   # Appointments module UI
-│   │   └── PharmacyManagement.jsx      # Pharmacy module UI
-│   ├── components/
-│   │   ├── Navbar.jsx                  # Navigation bar
-│   │   └── Footer.jsx                  # Footer component
-│   ├── App.jsx                         # Main app component
-│   ├── main.jsx                        # App entry point
-│   ├── App.css                         # App styles
-│   └── index.css                       # Global styles
-├── public/                              # Static assets
-├── package.json                         # Frontend dependencies
-├── vite.config.js                      # Vite configuration
-├── tailwind.config.js                  # Tailwind CSS config
-├── eslint.config.js                    # ESLint configuration
-├── index.html                          # HTML template
-└── README.md                           # Project documentation
+│
+├── backend/                                    # Backend (Python/FastAPI)
+│   ├── unified_api.py                          # 🔥 Main FastAPI server (all endpoints)
+│   ├── emergency_api.py                        # Emergency triage API module
+│   ├── navigation_api.py                       # Hospital navigation API module
+│   ├── Emergency_Management.py                 # Emergency triage logic & heap
+│   ├── Hospital_Graph_DSA.py                   # Graph + Dijkstra's algorithm
+│   ├── backup.py                               # 🔄 Terminal-based backup system
+│   ├── requirements.txt                        # Python dependencies
+│   ├── README.MD                               # Backend documentation
+│   │
+│   ├── Doctor_Appointment&Registry/            # Appointment scheduling module
+│   │   ├── DoctorAppointment.py               # Appointment booking logic
+│   │   ├── Doctors.json                       # Doctor data (auto-created)
+│   │   └── Patients.json                      # Patient registry (auto-created)
+│   │
+│   └── Inventory_Management/                   # Pharmacy management module
+│       ├── main.py                            # Original CLI for pharmacy
+│       ├── inventory_management.py            # Core inventory operations
+│       ├── billing.py                         # FIFO billing system
+│       ├── frequency_max.py                   # Max heap - most demanded med
+│       ├── expiry_min.py                      # Min heap - nearest expiry
+│       ├── stock_min.py                       # Min heap - lowest stock
+│       ├── medicine.json                      # Medicine inventory (auto-created)
+│       └── patient.json                       # Billing history (auto-created)
+│
+├── src/                                        # Frontend (React + Vite)
+│   ├── main.jsx                                # App entry point
+│   ├── App.jsx                                 # Main app component with routing
+│   ├── App.css                                 # Global app styles
+│   ├── index.css                               # Tailwind base styles
+│   │
+│   ├── components/                             # Reusable UI components
+│   │   ├── Navbar.jsx                         # Navigation bar
+│   │   ├── Footer.jsx                         # Footer component
+│   │   ├── ButtonCard.jsx                     # Feature card component
+│   │   └── AnimatedBackground.jsx             # Animated background effect
+│   │
+│   ├── pages/                                  # Page components (routes)
+│   │   ├── WelcomePage.jsx                    # Landing/Home page
+│   │   ├── EmergencyTriage.jsx                # Emergency triage UI
+│   │   ├── HospitalNavigation.jsx             # Navigation UI
+│   │   ├── AppointmentScheduling.jsx          # Appointments UI
+│   │   └── PharmacyManagement.jsx             # Pharmacy inventory UI
+│   │
+│   └── assets/                                 # Static assets (images, etc.)
+│
+├── public/                                     # Public static files
+│
+├── documentation/                              # Project documentation
+│   ├── API_DOCUMENTATION.md                    # API reference guide
+│   ├── TECHNICAL_GUIDE.md                      # Technical implementation details
+│   ├── COMPONENT_GUIDE.md                      # React component guide
+│   ├── APPOINTMENT_FEATURES.md                 # Appointment system docs
+│   ├── EMERGENCY_TRIAGE_SETUP.md              # Emergency system setup
+│   ├── NAVIGATION_INTEGRATION.md               # Navigation docs
+│   ├── SETUP_COMPLETE.md                       # Initial setup guide
+│   └── ... (other documentation files)
+│
+├── package.json                                # Frontend dependencies (npm)
+├── package-lock.json                           # Locked dependency versions
+├── vite.config.js                             # Vite build configuration
+├── tailwind.config.js                         # Tailwind CSS configuration
+├── postcss.config.js                          # PostCSS configuration
+├── eslint.config.js                           # ESLint linting rules
+│
+├── start-unified.ps1                          # PowerShell: Start full system
+├── start-emergency-triage.ps1                 # PowerShell: Start emergency only
+│
+├── index.html                                  # HTML template
+└── README.md                                   # 📖 This file - Main documentation
 ```
+
+### Key Files Explained:
+
+#### Backend Files:
+- **`unified_api.py`** - Main FastAPI application with all API endpoints combined
+- **`backup.py`** - Terminal-based fallback system (CLI version)
+- **`Emergency_Management.py`** - Implements priority queue using min-heap for triage
+- **`Hospital_Graph_DSA.py`** - Hospital graph structure with Dijkstra's algorithm
+- **`requirements.txt`** - Lists all Python dependencies (FastAPI, Uvicorn, Pydantic)
+
+#### Frontend Files:
+- **`App.jsx`** - Main React component with React Router setup
+- **`main.jsx`** - Application entry point, renders App into DOM
+- **`WelcomePage.jsx`** - Landing page with animated hero section and feature cards
+
+#### Configuration Files:
+- **`package.json`** - Node.js dependencies and npm scripts
+- **`vite.config.js`** - Vite development server and build settings
+- **`tailwind.config.js`** - Tailwind CSS theme customization
+
+#### Data Files (Auto-Generated):
+- **`Doctors.json`** - Stores doctor records and schedules
+- **`Patients.json`** - Stores patient registration data
+- **`medicine.json`** - Pharmacy inventory with serial numbers
+- **`patient.json`** - Patient billing history and purchase frequency
 
 ---
 
