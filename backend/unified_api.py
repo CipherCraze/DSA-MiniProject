@@ -961,7 +961,7 @@ def search_medicine(medicine_name: str):
 
 @app.post("/api/pharmacy/billing", tags=["Pharmacy"])
 def bill_patient_pharmacy(billing: BillingRequest):
-    """Bill a patient for medicine (FIFO - earliest expiry first)"""
+    """Bill a patient for medicine (FIFO - earliest expiry first, skips expired)"""
     medicines = load_medicines()
     patients = load_patient_billing()
     
@@ -971,14 +971,38 @@ def bill_patient_pharmacy(billing: BillingRequest):
     if medicines[billing.medicine_name]["stock"] == 0:
         raise HTTPException(status_code=400, detail=f"{billing.medicine_name} out of stock")
     
-    # Find earliest expiry (FIFO)
+    # Find earliest non-expired serial (FIFO with expiry check)
     serials = medicines[billing.medicine_name]["serials"]
-    earliest = min(serials.items(), key=lambda x: datetime.strptime(x[1]["expiry"], "%Y-%m-%d"))
-    serial_num, details = earliest
-    price = details["price"]
+    valid_serial = None
+    expired_serials = []
     
-    # Remove from inventory
-    del medicines[billing.medicine_name]["serials"][serial_num]
+    # Filter expired medicines and find earliest valid one
+    for serial_num, details in list(serials.items()):
+        expiry_date = datetime.strptime(details["expiry"], "%Y-%m-%d")
+        if expiry_date < datetime.now():
+            # Mark expired for removal
+            expired_serials.append(serial_num)
+        else:
+            # Find earliest non-expired
+            if (valid_serial is None or 
+                expiry_date < datetime.strptime(serials[valid_serial]["expiry"], "%Y-%m-%d")):
+                valid_serial = serial_num
+    
+    # Remove expired serials
+    for expired in expired_serials:
+        del serials[expired]
+    
+    # Update stock after removing expired
+    medicines[billing.medicine_name]["stock"] = len(serials)
+    
+    if valid_serial is None:
+        save_medicines(medicines)
+        raise HTTPException(status_code=400, detail=f"No non-expired {billing.medicine_name} available")
+    
+    # Get details and remove from inventory
+    details = serials[valid_serial]
+    price = details["price"]
+    del medicines[billing.medicine_name]["serials"][valid_serial]
     medicines[billing.medicine_name]["stock"] = len(medicines[billing.medicine_name]["serials"])
     save_medicines(medicines)
     
@@ -990,9 +1014,13 @@ def bill_patient_pharmacy(billing: BillingRequest):
             "total_price": 0
         }
     
+    # Ensure total_price exists
+    if "total_price" not in patients[billing.patient_name]:
+        patients[billing.patient_name]["total_price"] = 0
+    
     patients[billing.patient_name]["purchases"].append({
         "medicine": billing.medicine_name,
-        "serial": serial_num,
+        "serial": valid_serial,
         "price": price,
         "date": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     })
@@ -1009,10 +1037,11 @@ def bill_patient_pharmacy(billing: BillingRequest):
         "message": f"Billed {billing.patient_name} for {billing.medicine_name}",
         "patient": billing.patient_name,
         "medicine": billing.medicine_name,
-        "serial_sold": serial_num,
+        "serial_sold": valid_serial,
         "price_paid": price,
         "total_price": patients[billing.patient_name]["total_price"],
-        "remaining_stock": medicines[billing.medicine_name]["stock"]
+        "remaining_stock": medicines[billing.medicine_name]["stock"],
+        "expired_removed": len(expired_serials)
     }
 
 @app.get("/api/pharmacy/patients", tags=["Pharmacy"])

@@ -187,7 +187,11 @@ const PharmacyManagement = () => {
       });
       const data = await response.json();
       if (response.ok) {
-        toast.success(`✅ Billing successful! Serial: ${data.serial_sold}, Price: ₹${data.price_paid}`);
+        let successMsg = `✅ Billing successful! Serial: ${data.serial_sold}, Price: ₹${data.price_paid}`;
+        if (data.expired_removed > 0) {
+          successMsg += `\n⚠️ ${data.expired_removed} expired serial(s) removed`;
+        }
+        toast.success(successMsg, { duration: 4000 });
         setBillingForm({ patient_name: '', medicine_name: '' });
         setActiveModal(null);
         fetchMedicines();
@@ -593,9 +597,14 @@ const PharmacyManagement = () => {
                   <X className="w-6 h-6" />
                 </button>
               </div>
-              <p className="text-textSecondary text-sm mb-4">
-                ℹ️ FIFO Algorithm: Sells medicine with earliest expiry date first
-              </p>
+              <div className="bg-blue-50 border-l-4 border-blue-500 p-3 mb-4 rounded">
+                <p className="text-textSecondary text-sm">
+                  <strong className="text-blue-700">ℹ️ FIFO Algorithm:</strong><br/>
+                  • Sells medicine with earliest expiry date first<br/>
+                  • Automatically removes expired serials<br/>
+                  • Prevents medicine wastage
+                </p>
+              </div>
               <form onSubmit={handleBilling} className="space-y-4">
                 <div>
                   <label className="block text-textPrimary font-semibold mb-2">Patient Name</label>
